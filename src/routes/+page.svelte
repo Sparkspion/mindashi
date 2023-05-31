@@ -1,18 +1,19 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import ROUTES from '$lib/const/routes.js';
 
 	export let data;
 	const { session } = data;
 
 	onMount(() => {
 		if (session) {
-			goto('/home');
+			goto(ROUTES.HOME);
 		}
 	});
 </script>
 
-<div class="hero">
+<div class="hero bg-base-200 h-64">
 	<div class="hero-content text-center">
 		<div class="max-w-md">
 			<p class="py-6">

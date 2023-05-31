@@ -22,6 +22,6 @@
 </script>
 
 <div class="container p-3 mx-auto">
-	<h1 class="text-center text-primary text-3xl font-bold mt-3 mb-8">Mindashi</h1>
+	<a href="/" class="block text-center text-primary text-3xl font-bold mt-3 mb-8">Mindashi</a>
 	<slot />
 </div>
