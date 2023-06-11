@@ -1,17 +1,46 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { formatDistanceToNow } from 'date-fns';
 	import { enhance } from '$app/forms';
 	import type { SubmitFunction } from './$types.js';
 
 	export let data;
-	$: ({ room, messages, user_id, person_info } = data);
-	let loading = false;
+	const { room, messages, user_id, person_info, supabase } = data;
+	let loading = false,
+		scrollContainer: HTMLElement;
+	$: chats = messages;
+
 	const handleMsg: SubmitFunction = () => {
 		loading = true;
 		return async ({ update }) => {
 			update();
 			loading = false;
 		};
+	};
+
+	onMount(() => {
+		const msgsSubscription = supabase
+			.channel('any')
+			.on(
+				'postgres_changes',
+				{ event: '*', schema: 'public', table: 'messages', filter: `room_id=eq.${room?.id}` },
+				(payload) => {
+					chats = [...chats, payload.new];
+					handleDelayedScrollToBottom();
+				}
+			)
+			.subscribe();
+		return () => {
+			msgsSubscription.unsubscribe();
+		};
+	});
+
+	const handleDelayedScrollToBottom = () => {
+		setTimeout(() => {
+			if (scrollContainer) {
+				scrollContainer.scrollTop = scrollContainer.scrollHeight;
+			}
+		}, 0);
 	};
 </script>
 
@@ -20,8 +49,8 @@
 {/if}
 <div class="flex flex-col h-full">
 	<h2 class="text-center p-4 text-2xl font-bold">{person_info?.username}</h2>
-	<div class="flex-1">
-		{#each messages as message}
+	<div class="flex-1 overflow-auto" bind:this={scrollContainer}>
+		{#each chats as message}
 			<div class={`chat ${message.user_id === user_id ? 'chat-end' : 'chat-start'}`}>
 				<div class="chat-header">
 					<time class="text-xs opacity-50"

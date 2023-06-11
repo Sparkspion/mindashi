@@ -5,3 +5,12 @@
 :root {
 	font-family: 'Noto Sans JP', sans-serif;
 }
+
+::-webkit-scrollbar {
+	background-color: hsl(var(--b3));
+	width: 0.35rem;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: hsl(var(--a));
+}
